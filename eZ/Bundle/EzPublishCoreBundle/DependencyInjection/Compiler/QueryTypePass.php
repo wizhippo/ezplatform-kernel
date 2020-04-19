@@ -10,6 +10,7 @@ namespace eZ\Bundle\EzPublishCoreBundle\DependencyInjection\Compiler;
 
 use AppendIterator;
 use ArrayIterator;
+use eZ\Bundle\EzPublishCoreBundle\DependencyInjection\Compiler\TaggedServiceIdsIterator\BackwardCompatibleIterator;
 use Iterator;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -31,7 +32,12 @@ final class QueryTypePass implements CompilerPassInterface
 
         $queryTypes = [];
 
-        $iterator = $this->getTaggedServiceIdsIterator($container);
+        $iterator = new BackwardCompatibleIterator(
+            $container,
+            self::QUERY_TYPE_SERVICE_TAG,
+            self::DEPRECATED_QUERY_TYPE_SERVICE_TAG
+        );
+
         foreach ($iterator as $taggedServiceId => $tags) {
             $queryTypeDefinition = $container->getDefinition($taggedServiceId);
             $queryTypeClass = $container->getParameterBag()->resolveValue($queryTypeDefinition->getClass());
@@ -44,32 +50,5 @@ final class QueryTypePass implements CompilerPassInterface
 
         $aggregatorDefinition = $container->getDefinition('ezpublish.query_type.registry');
         $aggregatorDefinition->addMethodCall('addQueryTypes', [$queryTypes]);
-    }
-
-    private function getTaggedServiceIdsIterator(ContainerBuilder $container): Iterator
-    {
-        $serviceIdsWithDeprecatedTags = $container->findTaggedServiceIds(
-            self::DEPRECATED_QUERY_TYPE_SERVICE_TAG
-        );
-
-        foreach ($serviceIdsWithDeprecatedTags as $serviceId => $tags) {
-            @trigger_error(
-                sprintf(
-                    'Service tag `%s` is deprecated and will be removed in eZ Platform 4.0. Tag %s with `%s` instead.',
-                    self::DEPRECATED_QUERY_TYPE_SERVICE_TAG,
-                    $serviceId,
-                    self::QUERY_TYPE_SERVICE_TAG
-                ),
-                E_USER_DEPRECATED
-            );
-        }
-
-        $taggedServiceIds = $container->findTaggedServiceIds(self::QUERY_TYPE_SERVICE_TAG);
-
-        $iterator = new AppendIterator();
-        $iterator->append(new ArrayIterator($serviceIdsWithDeprecatedTags));
-        $iterator->append(new ArrayIterator($taggedServiceIds));
-
-        return $iterator;
     }
 }
