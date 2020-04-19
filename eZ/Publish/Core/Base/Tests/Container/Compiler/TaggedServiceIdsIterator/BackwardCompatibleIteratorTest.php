@@ -6,9 +6,9 @@
  */
 declare(strict_types=1);
 
-namespace eZ\Bundle\EzPublishCoreBundle\Tests\DependencyInjection\Compiler\TaggedServiceIdsIterator;
+namespace eZ\Publish\Core\Base\Tests\Container\Compiler\TaggedServiceIdsIterator;
 
-use eZ\Bundle\EzPublishCoreBundle\DependencyInjection\Compiler\TaggedServiceIdsIterator\BackwardCompatibleIterator;
+use eZ\Publish\Core\Base\Container\Compiler\TaggedServiceIdsIterator\BackwardCompatibleIterator;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\TaggedContainerInterface;
 
@@ -17,7 +17,7 @@ final class BackwardCompatibleIteratorTest extends TestCase
     private const EXAMPLE_SERVICE_TAG = 'current_tag';
     private const EXAMPLE_DEPRECATED_SERVICE_TAG = 'deprecated_tag';
 
-    /** @var \eZ\Bundle\EzPublishCoreBundle\Tests\DependencyInjection\Compiler\TaggedServiceIdsIterator\DeprecationErrorCaptor */
+    /** @var \eZ\Publish\Core\Base\Tests\Container\Compiler\TaggedServiceIdsIterator\DeprecationErrorCaptor */
     private $deprecationErrorCaptor;
 
     /** @var \Symfony\Component\DependencyInjection\TaggedContainerInterface */

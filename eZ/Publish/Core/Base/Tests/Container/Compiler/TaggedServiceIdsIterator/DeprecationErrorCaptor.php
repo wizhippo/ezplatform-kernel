@@ -6,7 +6,7 @@
  */
 declare(strict_types=1);
 
-namespace eZ\Bundle\EzPublishCoreBundle\Tests\DependencyInjection\Compiler\TaggedServiceIdsIterator;
+namespace eZ\Publish\Core\Base\Tests\Container\Compiler\TaggedServiceIdsIterator;
 
 /**
  * Captures user deprecation warnings emitted using trigger_error function.

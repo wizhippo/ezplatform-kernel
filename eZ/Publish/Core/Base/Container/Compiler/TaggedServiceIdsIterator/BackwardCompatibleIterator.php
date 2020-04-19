@@ -6,7 +6,7 @@
  */
 declare(strict_types=1);
 
-namespace eZ\Bundle\EzPublishCoreBundle\DependencyInjection\Compiler\TaggedServiceIdsIterator;
+namespace eZ\Publish\Core\Base\Container\Compiler\TaggedServiceIdsIterator;
 
 use Iterator;
 use IteratorAggregate;

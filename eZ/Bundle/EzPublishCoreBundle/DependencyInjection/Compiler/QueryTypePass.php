@@ -8,10 +8,7 @@ declare(strict_types=1);
 
 namespace eZ\Bundle\EzPublishCoreBundle\DependencyInjection\Compiler;
 
-use AppendIterator;
-use ArrayIterator;
-use eZ\Bundle\EzPublishCoreBundle\DependencyInjection\Compiler\TaggedServiceIdsIterator\BackwardCompatibleIterator;
-use Iterator;
+use eZ\Publish\Core\Base\Container\Compiler\TaggedServiceIdsIterator\BackwardCompatibleIterator;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
