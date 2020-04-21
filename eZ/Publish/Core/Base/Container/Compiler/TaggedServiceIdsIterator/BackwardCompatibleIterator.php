@@ -12,6 +12,9 @@ use Iterator;
 use IteratorAggregate;
 use Symfony\Component\DependencyInjection\TaggedContainerInterface;
 
+/**
+ * @internal
+ */
 final class BackwardCompatibleIterator implements IteratorAggregate
 {
     /** @var \Symfony\Component\DependencyInjection\TaggedContainerInterface */

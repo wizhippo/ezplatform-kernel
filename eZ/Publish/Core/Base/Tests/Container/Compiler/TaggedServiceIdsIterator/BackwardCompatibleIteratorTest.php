@@ -17,8 +17,8 @@ final class BackwardCompatibleIteratorTest extends TestCase
     private const EXAMPLE_SERVICE_TAG = 'current_tag';
     private const EXAMPLE_DEPRECATED_SERVICE_TAG = 'deprecated_tag';
 
-    /** @var \eZ\Publish\Core\Base\Tests\Container\Compiler\TaggedServiceIdsIterator\DeprecationErrorCaptor */
-    private $deprecationErrorCaptor;
+    /** @var \eZ\Publish\Core\Base\Tests\Container\Compiler\TaggedServiceIdsIterator\DeprecationErrorCollector */
+    private $deprecationErrorCollector;
 
     /** @var \Symfony\Component\DependencyInjection\TaggedContainerInterface */
     private $container;
@@ -50,17 +50,24 @@ final class BackwardCompatibleIteratorTest extends TestCase
                 ],
             ]);
 
-        $this->deprecationErrorCaptor = new DeprecationErrorCaptor();
-        $this->deprecationErrorCaptor->register();
+        $this->deprecationErrorCollector = new DeprecationErrorCollector();
+        $this->deprecationErrorCollector->register();
     }
 
     protected function tearDown(): void
     {
-        $this->deprecationErrorCaptor->unregister();
+        $this->deprecationErrorCollector->unregister();
     }
 
     public function testGetIterator(): void
     {
+        $this->expectDeprecationMessage(sprintf(
+            'Service tag `%s` is deprecated and will be removed in eZ Platform 4.0. Tag %s with `%s` instead.',
+            self::EXAMPLE_DEPRECATED_SERVICE_TAG,
+            'app.service.foo',
+            self::EXAMPLE_SERVICE_TAG
+        ));
+
         $iterator = new BackwardCompatibleIterator(
             $this->container,
             self::EXAMPLE_SERVICE_TAG,
@@ -89,7 +96,7 @@ final class BackwardCompatibleIteratorTest extends TestCase
 
     private function assertDeprecationError(string $expectedMessage): void
     {
-        foreach ($this->deprecationErrorCaptor->getErrors() as $error) {
+        foreach ($this->deprecationErrorCollector->getErrors() as $error) {
             if ($error['message'] === $expectedMessage) {
                 return;
             }

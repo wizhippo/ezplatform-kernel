@@ -13,7 +13,7 @@ namespace eZ\Publish\Core\Base\Tests\Container\Compiler\TaggedServiceIdsIterator
  *
  * @internal
  */
-final class DeprecationErrorCaptor
+final class DeprecationErrorCollector
 {
     /** @var array */
     private $errors = [];

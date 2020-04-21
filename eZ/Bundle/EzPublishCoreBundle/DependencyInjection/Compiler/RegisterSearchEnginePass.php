@@ -50,12 +50,13 @@ class RegisterSearchEnginePass implements CompilerPassInterface
             self::DEPRECATED_SEATCH_ENGINE_SERVICE_TAG
         );
 
-        foreach ($iterator as $id => $attributes) {
+        foreach ($iterator as $serviceId => $attributes) {
             foreach ($attributes as $attribute) {
                 if (!isset($attribute['alias'])) {
                     throw new LogicException(
                         sprintf(
-                            '%s or %s service tag needs an "alias" attribute to identify the search engine.',
+                            'Service "%s" tagged with "%s" or "%s" needs an "alias" attribute to identify the search engine',
+                            $serviceId,
                             self::SEARCH_ENGINE_SERVICE_TAG,
                             self::DEPRECATED_SEATCH_ENGINE_SERVICE_TAG
                         )
@@ -66,7 +67,7 @@ class RegisterSearchEnginePass implements CompilerPassInterface
                 $searchEngineFactoryDefinition->addMethodCall(
                     'registerSearchEngine',
                     [
-                        new Reference($id),
+                        new Reference($serviceId),
                         $attribute['alias'],
                     ]
                 );
