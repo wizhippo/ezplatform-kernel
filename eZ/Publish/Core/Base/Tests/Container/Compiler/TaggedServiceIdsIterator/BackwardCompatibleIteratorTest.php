@@ -61,13 +61,6 @@ final class BackwardCompatibleIteratorTest extends TestCase
 
     public function testGetIterator(): void
     {
-        $this->expectDeprecationMessage(sprintf(
-            'Service tag `%s` is deprecated and will be removed in eZ Platform 4.0. Tag %s with `%s` instead.',
-            self::EXAMPLE_DEPRECATED_SERVICE_TAG,
-            'app.service.foo',
-            self::EXAMPLE_SERVICE_TAG
-        ));
-
         $iterator = new BackwardCompatibleIterator(
             $this->container,
             self::EXAMPLE_SERVICE_TAG,
