@@ -21,6 +21,7 @@ use eZ\Publish\API\Repository\Values\Content\ContentInfo;
 use eZ\Publish\API\Repository\Values\Content\Relation;
 use eZ\Publish\API\Repository\Values\User\User;
 use eZ\Publish\API\Repository\Values\Content\LocationCreateStruct;
+use eZ\Publish\API\Repository\Values\ValueObject;
 
 /**
  * This class provides service methods for managing content.
@@ -202,7 +203,7 @@ interface ContentService
      *
      * @return \eZ\Publish\API\Repository\Values\Content\Content - the newly created content draft
      */
-    public function createContent(ContentCreateStruct $contentCreateStruct, array $locationCreateStructs = []): Content;
+    public function createContent(ContentCreateStruct $contentCreateStruct, array $locationCreateStructs = [], bool $validate = true): Content;
 
     /**
      * Updates the metadata.
@@ -310,7 +311,7 @@ interface ContentService
      *
      * @return \eZ\Publish\API\Repository\Values\Content\Content the content draft with the updated fields
      */
-    public function updateContent(VersionInfo $versionInfo, ContentUpdateStruct $contentUpdateStruct): Content;
+    public function updateContent(VersionInfo $versionInfo, ContentUpdateStruct $contentUpdateStruct, bool $validate = true): Content;
 
     /**
      * Publishes a content version.
@@ -538,4 +539,6 @@ interface ContentService
      * @return \eZ\Publish\API\Repository\Values\Content\ContentUpdateStruct
      */
     public function newContentUpdateStruct(): ContentUpdateStruct;
+
+    public function validate(ValueObject $object, array $context, ?array $fieldIdentifiers = null): array;
 }

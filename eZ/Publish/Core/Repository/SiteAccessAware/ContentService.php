@@ -23,6 +23,7 @@ use eZ\Publish\API\Repository\Values\User\User;
 use eZ\Publish\API\Repository\Values\Content\VersionInfo;
 use eZ\Publish\API\Repository\Values\Content\ContentInfo;
 use eZ\Publish\API\Repository\LanguageResolver;
+use eZ\Publish\API\Repository\Values\ValueObject;
 
 /**
  * SiteAccess aware implementation of ContentService injecting languages where needed.
@@ -116,9 +117,9 @@ class ContentService implements ContentServiceInterface
         );
     }
 
-    public function createContent(ContentCreateStruct $contentCreateStruct, array $locationCreateStructs = []): Content
+    public function createContent(ContentCreateStruct $contentCreateStruct, array $locationCreateStructs = [], bool $validate = true): Content
     {
-        return $this->service->createContent($contentCreateStruct, $locationCreateStructs);
+        return $this->service->createContent($contentCreateStruct, $locationCreateStructs, $validate);
     }
 
     public function updateContentMetadata(ContentInfo $contentInfo, ContentMetadataUpdateStruct $contentMetadataUpdateStruct): Content
@@ -155,9 +156,9 @@ class ContentService implements ContentServiceInterface
         return $this->service->loadContentDraftList($user, $offset, $limit);
     }
 
-    public function updateContent(VersionInfo $versionInfo, ContentUpdateStruct $contentUpdateStruct): Content
+    public function updateContent(VersionInfo $versionInfo, ContentUpdateStruct $contentUpdateStruct, bool $validate = true): Content
     {
-        return $this->service->updateContent($versionInfo, $contentUpdateStruct);
+        return $this->service->updateContent($versionInfo, $contentUpdateStruct, $validate);
     }
 
     public function publishVersion(VersionInfo $versionInfo, array $translations = Language::ALL): Content
@@ -255,5 +256,13 @@ class ContentService implements ContentServiceInterface
     public function newContentUpdateStruct(): ContentUpdateStruct
     {
         return $this->service->newContentUpdateStruct();
+    }
+
+    public function validate(
+        ValueObject $object,
+        array $context,
+        ?array $fieldIdentifiers = null
+    ): array {
+        return $this->service->validate($object, $context, $fieldIdentifiers);
     }
 }
