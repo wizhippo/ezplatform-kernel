@@ -31,7 +31,6 @@ final class CreateContentEvent extends AfterEvent
         ContentCreateStruct $contentCreateStruct,
         array $locationCreateStructs,
         bool $validate
-
     ) {
         $this->content = $content;
         $this->contentCreateStruct = $contentCreateStruct;

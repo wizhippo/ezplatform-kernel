@@ -70,7 +70,7 @@ class ContentService extends ContentServiceDecorator
         $eventData = [
             $contentCreateStruct,
             $locationCreateStructs,
-            $validate
+            $validate,
         ];
 
         $beforeEvent = new BeforeCreateContentEvent(...$eventData);
@@ -179,7 +179,7 @@ class ContentService extends ContentServiceDecorator
         $eventData = [
             $versionInfo,
             $contentUpdateStruct,
-            $validate
+            $validate,
         ];
 
         $beforeEvent = new BeforeUpdateContentEvent(...$eventData);
