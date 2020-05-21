@@ -59,7 +59,6 @@ class ContentUpdateStructValidator implements ContentValidator
 
         /** @var ContentUpdateStruct $contentUpdateStruct */
         $contentUpdateStruct = $object;
-
         $contentType = $content->getContentType();
 
         $mainLanguageCode = $content->contentInfo->mainLanguageCode;
@@ -87,13 +86,20 @@ class ContentUpdateStructValidator implements ContentValidator
             );
 
             foreach ($allLanguageCodes as $languageCode) {
+                $isLanguageNew = !in_array($languageCode, $content->versionInfo->languageCodes);
                 $isLanguageUpdated = in_array($languageCode, $updatedLanguageCodes);
                 $valueLanguageCode = $fieldDefinition->isTranslatable ? $languageCode : $mainLanguageCode;
                 $isFieldUpdated = isset($fields[$fieldDefinition->identifier][$valueLanguageCode]);
 
-                $fieldValue = (!$isFieldUpdated || !$fieldDefinition->isTranslatable)
-                    ? $content->getField($fieldDefinition->identifier, $valueLanguageCode)->value
-                    : $fields[$fieldDefinition->identifier][$valueLanguageCode]->value;
+                if (!$isFieldUpdated && !$isLanguageNew) {
+                    $fieldValue = $content->getField($fieldDefinition->identifier, $valueLanguageCode)->value;
+                } else if (!$isFieldUpdated && $isLanguageNew && !$fieldDefinition->isTranslatable) {
+                    $fieldValue = $content->getField($fieldDefinition->identifier, $valueLanguageCode)->value;
+                } else if ($isFieldUpdated) {
+                    $fieldValue = $fields[$fieldDefinition->identifier][$valueLanguageCode]->value;
+                } else {
+                    $fieldValue = $fieldDefinition->defaultValue;
+                }
 
                 $fieldValue = $fieldType->acceptValue($fieldValue);
 

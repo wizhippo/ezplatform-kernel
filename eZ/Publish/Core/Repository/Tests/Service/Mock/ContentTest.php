@@ -78,6 +78,8 @@ class ContentTest extends BaseServiceMockTest
         $nameSchemaServiceMock = $this->getNameSchemaServiceMock();
         $fieldTypeRegistryMock = $this->getFieldTypeRegistryMock();
         $permissionResolverMock = $this->getPermissionResolverMock();
+        $contentMapper = $this->getContentMapperMock();
+        $contentValidatorStrategy = $this->getContentValidatorStrategyMock();
         $settings = ['default_version_archive_limit' => 10];
 
         $service = new ContentService(
@@ -88,6 +90,8 @@ class ContentTest extends BaseServiceMockTest
             $nameSchemaServiceMock,
             $fieldTypeRegistryMock,
             $permissionResolverMock,
+            $contentMapper,
+            $contentValidatorStrategy,
             $settings
         );
     }
@@ -1905,7 +1909,7 @@ class ContentTest extends BaseServiceMockTest
         $contentType = new ContentType(
             [
                 'id' => 123,
-                'fieldDefinitions' => [],
+                'fieldDefinitions' => new FieldDefinitionCollection([]),
             ]
         );
         $contentCreateStruct = new ContentCreateStruct(
@@ -2685,13 +2689,20 @@ class ContentTest extends BaseServiceMockTest
         $contentType = new ContentType(
             [
                 'id' => 123,
-                'fieldDefinitions' => $fieldDefinitions,
+                'fieldDefinitions' => new FieldDefinitionCollection($fieldDefinitions),
                 'nameSchema' => '<nameSchema>',
             ]
         );
         $contentCreateStruct = new ContentCreateStruct(
             [
-                'fields' => [],
+                'fields' => [
+                    'fieldDefinitionId' => new Field([
+                        'fieldDefIdentifier' => 'identifier',
+                        'value' => 123,
+                        'fieldTypeIdentifier' => 'fieldTypeIdentifier',
+                        'languageCode' => 'eng-US',
+                    ]),
+                ],
                 'mainLanguageCode' => 'eng-US',
                 'contentType' => $contentType,
                 'alwaysAvailable' => false,
@@ -2769,6 +2780,21 @@ class ContentTest extends BaseServiceMockTest
                 $this->equalTo(null),
                 $this->equalTo(null)
             )->will($this->returnValue($spiLocationCreateStruct));
+
+        $fieldTypeMock = $this->createMock(SPIFieldType::class);
+        $fieldTypeMock
+            ->method('acceptValue')
+            ->will(
+                $this->returnCallback(
+                    function ($valueString) {
+                        return new ValueStub($valueString);
+                    }
+                )
+            );
+
+        $this->getFieldTypeRegistryMock()
+            ->method('getFieldType')
+            ->will($this->returnValue($fieldTypeMock));
 
         $mockedService->createContent(
             $contentCreateStruct,
@@ -3235,15 +3261,18 @@ class ContentTest extends BaseServiceMockTest
                 'status' => VersionInfo::STATUS_DRAFT,
             ]
         );
+
+        $contentType = new ContentType([
+            'fieldDefinitions' => new FieldDefinitionCollection($fieldDefinitions),
+        ]);
+
         $content = new Content(
             [
                 'versionInfo' => $versionInfo,
                 'internalFields' => $existingFields,
+                'contentType' => $contentType,
             ]
         );
-        $contentType = new ContentType([
-            'fieldDefinitions' => new FieldDefinitionCollection($fieldDefinitions),
-        ]);
 
         $languageHandlerMock->expects($this->any())
             ->method('loadByLanguageCode')
@@ -4723,6 +4752,7 @@ class ContentTest extends BaseServiceMockTest
             [
                 'versionInfo' => $versionInfo,
                 'internalFields' => [],
+                'contentType' => new ContentType(),
             ]
         );
 
@@ -4781,7 +4811,6 @@ class ContentTest extends BaseServiceMockTest
         $structFields,
         $fieldDefinitions = []
     ) {
-        $repositoryMock = $this->getRepositoryMock();
         $permissionResolverMock = $this->getPermissionResolverMock();
         $mockedService = $this->getPartlyMockedContentService(['internalLoadContentById', 'loadContent']);
         /** @var \PHPUnit\Framework\MockObject\MockObject $languageHandlerMock */
@@ -4801,15 +4830,16 @@ class ContentTest extends BaseServiceMockTest
                 'status' => VersionInfo::STATUS_DRAFT,
             ]
         );
+        $contentType = new ContentType([
+            'fieldDefinitions' => new FieldDefinitionCollection($fieldDefinitions),
+        ]);
         $content = new Content(
             [
                 'versionInfo' => $versionInfo,
                 'internalFields' => [],
+                'contentType' => $contentType,
             ]
         );
-        $contentType = new ContentType([
-            'fieldDefinitions' => new FieldDefinitionCollection($fieldDefinitions),
-        ]);
 
         $languageHandlerMock->expects($this->any())
             ->method('loadByLanguageCode')
@@ -4851,14 +4881,12 @@ class ContentTest extends BaseServiceMockTest
                 $this->isType('array')
             )->will($this->returnValue(true));
 
+        /*
         $contentTypeServiceMock->expects($this->once())
             ->method('loadContentType')
-            ->with($this->equalTo(24))
+            ->with($this->equalTo($contentType->id))
             ->will($this->returnValue($contentType));
-
-        $repositoryMock->expects($this->once())
-            ->method('getContentTypeService')
-            ->will($this->returnValue($contentTypeServiceMock));
+        */
 
         $contentUpdateStruct = new ContentUpdateStruct(
             [
@@ -4992,15 +5020,16 @@ class ContentTest extends BaseServiceMockTest
                 'status' => VersionInfo::STATUS_DRAFT,
             ]
         );
+        $contentType = new ContentType([
+            'fieldDefinitions' => new FieldDefinitionCollection($fieldDefinitions),
+        ]);
         $content = new Content(
             [
                 'versionInfo' => $versionInfo,
                 'internalFields' => $existingFields,
+                'contentType' => $contentType,
             ]
         );
-        $contentType = new ContentType([
-            'fieldDefinitions' => new FieldDefinitionCollection($fieldDefinitions),
-        ]);
 
         $languageHandlerMock->expects($this->any())
             ->method('loadByLanguageCode')
@@ -5037,15 +5066,6 @@ class ContentTest extends BaseServiceMockTest
                 $this->equalTo($content),
                 $this->isType('array')
             )->will($this->returnValue(true));
-
-        $contentTypeServiceMock->expects($this->once())
-            ->method('loadContentType')
-            ->with($this->equalTo(24))
-            ->will($this->returnValue($contentType));
-
-        $repositoryMock->expects($this->once())
-            ->method('getContentTypeService')
-            ->will($this->returnValue($contentTypeServiceMock));
 
         $fieldTypeMock->expects($this->any())
             ->method('acceptValue')
@@ -5205,15 +5225,16 @@ class ContentTest extends BaseServiceMockTest
                 'status' => VersionInfo::STATUS_DRAFT,
             ]
         );
+        $contentType = new ContentType([
+            'fieldDefinitions' => new FieldDefinitionCollection($fieldDefinitions),
+        ]);
         $content = new Content(
             [
                 'versionInfo' => $versionInfo,
                 'internalFields' => $existingFields,
+                'contentType' => $contentType,
             ]
         );
-        $contentType = new ContentType([
-            'fieldDefinitions' => new FieldDefinitionCollection($fieldDefinitions),
-        ]);
 
         $languageHandlerMock->expects($this->any())
             ->method('loadByLanguageCode')
@@ -5246,15 +5267,6 @@ class ContentTest extends BaseServiceMockTest
         $permissionResolverMock
             ->method('canUser')
             ->will($this->returnValue(true));
-
-        $contentTypeServiceMock->expects($this->once())
-            ->method('loadContentType')
-            ->with($this->equalTo(24))
-            ->will($this->returnValue($contentType));
-
-        $repositoryMock->expects($this->once())
-            ->method('getContentTypeService')
-            ->will($this->returnValue($contentTypeServiceMock));
 
         $fieldValues = $this->determineValuesForUpdate(
             $initialLanguageCode,
@@ -6218,6 +6230,14 @@ class ContentTest extends BaseServiceMockTest
                         $this->getNameSchemaServiceMock(),
                         $this->getFieldTypeRegistryMock(),
                         $this->getPermissionResolverMock(),
+                        $this->getContentMapperMock([
+                            'mapFieldsForCreate',
+                            'getLanguageCodesForCreate',
+                            'mapFieldsForUpdate',
+                            'getLanguageCodesForUpdate',
+
+                        ]),
+                        $this->getContentValidatorStrategyMock(['validate']),
                         [],
                     ]
                 )
