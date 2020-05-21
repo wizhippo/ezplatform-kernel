@@ -46,7 +46,7 @@ class ContentValidatorStrategy implements ContentValidator
         }
 
         throw new InvalidArgumentException('$object', sprintf(
-            'Validator for %s type not found.', gettype($object)
+            'Validator for %s type not found.', get_class($object)
         ));
     }
 }
