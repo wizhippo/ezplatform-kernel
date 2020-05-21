@@ -27,7 +27,7 @@ class ContentValidatorStrategyTest extends TestCase
     public function testKnownValidationObject(): void
     {
         $contentValidatorStrategy = new ContentValidatorStrategy([
-            new class implements ContentValidator {
+            new class() implements ContentValidator {
                 public function supports(ValueObject $object): bool
                 {
                     return $object instanceof ObjectState;
@@ -39,10 +39,10 @@ class ContentValidatorStrategyTest extends TestCase
                     ?array $fieldIdentifiers = null
                 ): array {
                     return [
-                        'test'
+                        'test',
                     ];
                 }
-            }
+            },
         ]);
 
         $errors = $contentValidatorStrategy->validate(new ObjectState());
@@ -60,7 +60,7 @@ class ContentValidatorStrategyTest extends TestCase
     public function testSuportsKnownValidationObject(): void
     {
         $contentValidatorStrategy = new ContentValidatorStrategy([
-            new class implements ContentValidator {
+            new class() implements ContentValidator {
                 public function supports(ValueObject $object): bool
                 {
                     return $object instanceof ObjectState;
@@ -72,10 +72,10 @@ class ContentValidatorStrategyTest extends TestCase
                     ?array $fieldIdentifiers = null
                 ): array {
                     return [
-                        'test'
+                        'test',
                     ];
                 }
-            }
+            },
         ]);
 
         $supports = $contentValidatorStrategy->supports(new ObjectState());
