@@ -93,9 +93,9 @@ class ContentUpdateStructValidator implements ContentValidator
 
                 if (!$isFieldUpdated && !$isLanguageNew) {
                     $fieldValue = $content->getField($fieldDefinition->identifier, $valueLanguageCode)->value;
-                } else if (!$isFieldUpdated && $isLanguageNew && !$fieldDefinition->isTranslatable) {
+                } elseif (!$isFieldUpdated && $isLanguageNew && !$fieldDefinition->isTranslatable) {
                     $fieldValue = $content->getField($fieldDefinition->identifier, $valueLanguageCode)->value;
-                } else if ($isFieldUpdated) {
+                } elseif ($isFieldUpdated) {
                     $fieldValue = $fields[$fieldDefinition->identifier][$valueLanguageCode]->value;
                 } else {
                     $fieldValue = $fieldDefinition->defaultValue;
