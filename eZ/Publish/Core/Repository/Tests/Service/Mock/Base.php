@@ -110,8 +110,8 @@ abstract class Base extends TestCase
                 $this->getContentDomainMapperMock(),
                 $this->getContentTypeDomainMapperMock(),
                 $this->getRoleDomainMapperMock(),
-                $this->getContentMapperMock(),
-                $this->getContentValidatorStrategyMock(),
+                $this->getContentMapper(),
+                $this->getContentValidatorStrategy(),
                 $this->getLimitationServiceMock(),
                 $this->getLanguageResolverMock(),
                 $this->getPermissionServiceMock(),
@@ -389,22 +389,22 @@ abstract class Base extends TestCase
         return $this->roleDomainMapperMock;
     }
 
-    protected function getContentMapperMock(array $methods = []): ContentMapper
+    protected function getContentMapper(): ContentMapper
     {
         return new ContentMapper(
             $this->getPersistenceMock()->contentLanguageHandler()
         );
     }
 
-    protected function getContentValidatorStrategyMock(array $methods = []): ContentValidator
+    protected function getContentValidatorStrategy(): ContentValidator
     {
         $validators = [
             new ContentCreateStructValidator(
-                $this->getContentMapperMock(),
+                $this->getContentMapper(),
                 $this->getFieldTypeRegistryMock()
             ),
             new ContentUpdateStructValidator(
-                $this->getContentMapperMock(),
+                $this->getContentMapper(),
                 $this->getFieldTypeRegistryMock(),
                 $this->getPersistenceMock()->contentLanguageHandler()
             ),

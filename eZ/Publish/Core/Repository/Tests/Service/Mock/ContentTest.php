@@ -78,8 +78,8 @@ class ContentTest extends BaseServiceMockTest
         $nameSchemaServiceMock = $this->getNameSchemaServiceMock();
         $fieldTypeRegistryMock = $this->getFieldTypeRegistryMock();
         $permissionResolverMock = $this->getPermissionResolverMock();
-        $contentMapper = $this->getContentMapperMock();
-        $contentValidatorStrategy = $this->getContentValidatorStrategyMock();
+        $contentMapper = $this->getContentMapper();
+        $contentValidatorStrategy = $this->getContentValidatorStrategy();
         $settings = ['default_version_archive_limit' => 10];
 
         $service = new ContentService(
@@ -6230,14 +6230,8 @@ class ContentTest extends BaseServiceMockTest
                         $this->getNameSchemaServiceMock(),
                         $this->getFieldTypeRegistryMock(),
                         $this->getPermissionResolverMock(),
-                        $this->getContentMapperMock([
-                            'mapFieldsForCreate',
-                            'getLanguageCodesForCreate',
-                            'mapFieldsForUpdate',
-                            'getLanguageCodesForUpdate',
-
-                        ]),
-                        $this->getContentValidatorStrategyMock(['validate']),
+                        $this->getContentMapper(),
+                        $this->getContentValidatorStrategy(),
                         [],
                     ]
                 )
