@@ -25,6 +25,9 @@ class ChainRoutingPass implements CompilerPassInterface
         }
 
         $chainRouter = $container->getDefinition('ezpublish.chain_router');
+        if ($chainRouter->hasMethodCall('addExpressionLanguageProvider')) {
+            $chainRouter->removeMethodCall('addExpressionLanguageProvider');
+        }
 
         // Enforce default router to be part of the routing chain
         // The default router will be given the highest priority so that it will be used by default
